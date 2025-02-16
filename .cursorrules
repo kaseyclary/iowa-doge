@@ -1,0 +1,135 @@
+# Cursorfile
+# This file specifies tasks, relevant files, and step-by-step instructions
+# to automate and guide the development process for the Iowa State Regulations Dashboard.
+
+name: Iowa-State-Regulations-Dashboard
+
+version: 1.0.0
+
+tasks:
+  - name: setup_project_structure
+    description: |
+      Ensure the project structure is correctly set up to accommodate static data
+      and the required Next.js pages.
+    steps:
+      - Create a `/data` folder at the project root to store regulation statistics.
+      - Add a `regulations.json` file inside `/data` to hold dummy statistics.
+      - Create a `/components` folder to store reusable UI components.
+      - Create a `/charts` folder inside `/components` to store chart visualizations.
+      - Ensure that Tailwind CSS is properly configured and available globally.
+
+  - name: add_dummy_data
+    description: |
+      Populate the `/data/regulations.json` file with placeholder statistics
+      so the frontend can be built before final data integration.
+    steps:
+      - Add JSON data representing:
+        1) The number of laws and rules per year.
+        2) The number of rules by agency.
+      - Ensure the data is structured to match visualization needs.
+      - Verify the JSON is correctly formatted.
+    file: data/regulations.json
+    content: |
+      {
+        "rulesCountByYear": [
+          { "year": 2015, "count": 2800 },
+          { "year": 2016, "count": 3000 },
+          { "year": 2017, "count": 3200 },
+          { "year": 2018, "count": 3100 },
+          { "year": 2019, "count": 3050 },
+          { "year": 2020, "count": 2900 },
+          { "year": 2021, "count": 2950 },
+          { "year": 2022, "count": 3100 },
+          { "year": 2023, "count": 3200 },
+          { "year": 2024, "count": 3150 }
+        ],
+        "lawsCountByYear": [
+          { "year": 2015, "count": 120 },
+          { "year": 2016, "count": 125 },
+          { "year": 2017, "count": 130 },
+          { "year": 2018, "count": 128 },
+          { "year": 2019, "count": 126 },
+          { "year": 2020, "count": 122 },
+          { "year": 2021, "count": 125 },
+          { "year": 2022, "count": 130 },
+          { "year": 2023, "count": 135 },
+          { "year": 2024, "count": 132 }
+        ],
+        "rulesByAgency": [
+          { "agency": "Department of Health", "count": 400 },
+          { "agency": "Department of Education", "count": 300 },
+          { "agency": "Department of Transportation", "count": 250 },
+          { "agency": "Environmental Protection Agency", "count": 280 },
+          { "agency": "Department of Commerce", "count": 350 },
+          { "agency": "Department of Labor", "count": 275 },
+          { "agency": "Department of Agriculture", "count": 300 }
+        ]
+      }
+
+  - name: build_homepage
+    description: |
+      Implement the homepage layout to display a summary of regulation statistics.
+    steps:
+      - Create `pages/index.tsx`.
+      - Import data from `/data/regulations.json`.
+      - Display headline statistics:
+        - Total number of rules and laws.
+        - Ratio of rules per law.
+      - Create a simple statistics card component in `/components/StatCard.tsx` for displaying key metrics.
+      - Ensure the homepage uses TailwindCSS for styling.
+
+  - name: implement_charts
+    description: |
+      Create dynamic charts for visualizing regulatory data.
+    steps:
+      - Install `recharts` for data visualization.
+      - Create a `RulesOverTimeChart.tsx` component in `/components/charts/` to display a line chart of rule/law counts by year.
+      - Create an `AgencyBarChart.tsx` component in `/components/charts/` to display a bar chart comparing rule counts across agencies.
+      - Ensure both charts use responsive containers for adaptability.
+
+  - name: build_agency_page
+    description: |
+      Implement a page listing all agencies with their respective regulation counts.
+    steps:
+      - Create `pages/agencies.tsx`.
+      - Import data from `/data/regulations.json`.
+      - Display a table or card grid showing each agency and its rule count.
+      - Add links to filter by agency.
+
+  - name: finalize_styling_and_responsiveness
+    description: |
+      Ensure the application is fully responsive and visually aligned with the federal site.
+    steps:
+      - Apply TailwindCSS utilities to improve spacing, layout, and font styling.
+      - Test responsiveness across multiple screen sizes.
+      - Ensure that text, icons, and charts are properly aligned.
+
+files:
+  - path: data/regulations.json
+    purpose: Stores static regulation statistics.
+
+  - path: pages/index.tsx
+    purpose: Homepage displaying the main statistics and charts.
+
+  - path: pages/agencies.tsx
+    purpose: List of agencies with their respective rule counts.
+
+  - path: components/StatCard.tsx
+    purpose: Reusable component for displaying key statistics.
+
+  - path: components/charts/RulesOverTimeChart.tsx
+    purpose: Line chart visualization of rule and law counts over time.
+
+  - path: components/charts/AgencyBarChart.tsx
+    purpose: Bar chart comparing rule counts by agency.
+
+instructions:
+  - Install dependencies:
+      ```
+      npm install recharts
+      ```
+  - Verify that TailwindCSS is applied globally.
+  - Ensure that JSON data is correctly imported into pages and components.
+  - Test charts to confirm correct rendering of statistics.
+  - Check for layout issues and fix any inconsistencies.
+  - Run `npm run build` and `npm run dev` to ensure the application compiles and runs without errors.
