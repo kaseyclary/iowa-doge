@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart,
   Bar,
@@ -10,47 +10,76 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts';
+import { formatNumber, getAxisFontSize } from './utils/formatters';
+import TooltipContainer from './common/TooltipContainer';
 
 const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    const rules = payload.find((p) => p.dataKey === 'Rules')?.value || 0;
-    const laws = payload.find((p) => p.dataKey === 'Laws')?.value || 0;
-    const ratio = laws !== 0 ? (rules / laws).toFixed(1) : '0.0';
+  if (!active || !payload?.length) return null;
 
+  return (
+    <TooltipContainer>
+      <p>In {label}:</p>
+      {payload.map((entry) => (
+        <p key={entry.name}>
+          {entry.name}: {formatNumber(entry.value)}
+        </p>
+      ))}
+    </TooltipContainer>
+  );
+};
+
+export default function RulesOverTimeChart() {
+  const [showAllData, setShowAllData] = useState(false);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const startYear = showAllData ? 2003 : 2012;
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/agencies/rules/new?start_year=${startYear}&end_year=2024`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        
+        const jsonData = await response.json();
+        const formattedData = jsonData.map(item => ({
+          year: item.year,
+          Rules: item.new_rules_count,
+          Laws: item.total_laws
+        }));
+        
+        setData(formattedData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [showAllData]);
+
+  if (loading) {
     return (
-      <div
-        style={{
-          backgroundColor: '#1F2937',
-          border: 'none',
-          borderRadius: '0.5rem',
-          color: '#F3F4F6',
-          padding: '0.5rem'
-        }}
-      >
-        <p>In {label}, there were {ratio} rules per law.</p>
-        <p>Rules: {rules}</p>
-        <p>Laws: {laws}</p>
+      <div className="flex justify-center items-center h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-  return null;
-};
 
-export default function RulesOverTimeChart({ rulesData, lawsData }) {
-  const [showAllData, setShowAllData] = useState(false);
-
-  const filterData = (data) => {
-    if (!showAllData) {
-      return data.filter(item => item.year >= 2012 && item.year <= 2025);
-    }
-    return data;
-  };
-
-  const combinedData = filterData(rulesData).map((rule) => ({
-    year: rule.year,
-    Rules: rule.count,
-    Laws: lawsData.find((law) => law.year === rule.year)?.count || 0
-  }));
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-[400px] text-red-500">
+        Error: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -68,22 +97,30 @@ export default function RulesOverTimeChart({ rulesData, lawsData }) {
 
       <div className="w-full h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={combinedData}>
+          <BarChart data={data}>
             <XAxis
               dataKey="year"
               stroke="#9CA3AF"
               tick={{ fill: '#9CA3AF' }}
+              fontSize={getAxisFontSize()}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#9CA3AF"
               tick={{ fill: '#9CA3AF' }}
+              tickFormatter={formatNumber}
+              fontSize={getAxisFontSize()}
+              width={45}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Bar
               dataKey="Rules"
               fill="#3B82F6"
-              name="Rules"
+              name="New Rules"
               radius={[4, 4, 0, 0]}
             />
             <Bar

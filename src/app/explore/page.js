@@ -11,7 +11,7 @@ export default function ExplorePage() {
     const fetchAgencies = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8000/api/v1/agencies/by-year/2024');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/agencies/by-year/2024`);
         if (!response.ok) {
           throw new Error('Failed to fetch agencies');
         }
