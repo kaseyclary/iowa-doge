@@ -36,7 +36,7 @@ export default function ExplorePage() {
         <div className="flex flex-col items-center space-y-4">
           <h1 className="text-4xl font-bold text-white">Explore Iowa Regulations</h1>
           <p className="text-gray-400 text-center max-w-2xl">
-            Dive deep into Iowa's regulatory landscape. Explore the current state of regulations across different agencies.
+            Explore regulations across all of the different agencies Iowa has to offer.
           </p>
         </div>
 

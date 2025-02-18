@@ -166,7 +166,7 @@ export default function Home() {
             Regulations by State Agency
           </h2>
           <p className="text-gray-400 font-medium text-center text-base sm:text-lg px-4 sm:px-0 w-full sm:w-5/12 mx-auto mb-6 sm:mb-8">
-            Search and sort through Iowa's regulatory agencies to see their impact on the state's regulatory landscape.
+            Browse through the full catalog of the Iowa regulatory agencies.
           </p>
           <AgencyBarChart data={regulationsData.rulesByAgency} />
         </section>
